@@ -67,7 +67,7 @@ export function AboutModal() {
                   Links
                 </h3>
 
-                <LinkItem href="https://github.com/your-repo/passage" label="GitHub Repository" />
+                <LinkItem href="https://github.com/chrisedgington/passage" label="GitHub Repository" />
                 <LinkItem href="https://edgecraftstudio.com" label="Edgecraft Studio" />
                 <LinkItem href="https://cedgington.dev" label="cedgington.dev" />
                 <LinkItem href="https://x.com/chrisedgington" label="@chrisedgington on X" />

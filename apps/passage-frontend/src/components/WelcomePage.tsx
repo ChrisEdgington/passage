@@ -155,7 +155,7 @@ export const WelcomePage = observer(function WelcomePage() {
               <p className="mb-3">Run these commands on your Mac:</p>
               <div className="bg-neutral-900 text-neutral-100 rounded-lg p-3 font-mono text-xs overflow-x-auto">
                 <div className="text-neutral-500"># Clone the repository</div>
-                <div>git clone https://github.com/your-repo/passage</div>
+                <div>git clone https://github.com/chrisedgington/passage</div>
                 <div>cd passage</div>
                 <div className="mt-2 text-neutral-500"># Install and build</div>
                 <div>pnpm install && pnpm build</div>
