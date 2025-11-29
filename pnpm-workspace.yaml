@@ -1,0 +1,4 @@
+packages:
+  - "packages/shared-types"
+  - "apps/passage-backend"
+  - "apps/passage-frontend"

@@ -1,0 +1,520 @@
+@import "tailwindcss";
+
+/* ========================================
+   Default Theme (Light)
+   ======================================== */
+@theme {
+  --color-background: oklch(98% 0 0);
+  --color-foreground: oklch(15% 0 0);
+  --color-card: oklch(100% 0 0);
+  --color-card-foreground: oklch(15% 0 0);
+  --color-popover: oklch(100% 0 0);
+  --color-popover-foreground: oklch(15% 0 0);
+  --color-primary: oklch(55% 0.18 250);
+  --color-primary-foreground: oklch(100% 0 0);
+  --color-secondary: oklch(95% 0.01 250);
+  --color-secondary-foreground: oklch(25% 0 0);
+  --color-muted: oklch(95% 0 0);
+  --color-muted-foreground: oklch(45% 0 0);
+  --color-accent: oklch(95% 0.01 250);
+  --color-accent-foreground: oklch(25% 0 0);
+  --color-destructive: oklch(55% 0.25 25);
+  --color-destructive-foreground: oklch(98% 0 0);
+  --color-border: oklch(90% 0 0);
+  --color-input: oklch(95% 0 0);
+  --color-ring: oklch(55% 0.18 250);
+  --color-sidebar: oklch(97% 0.005 250);
+  --color-imessage-blue: oklch(58% 0.22 250);
+  --color-imessage-blue-foreground: oklch(100% 0 0);
+  --color-sms-gray: oklch(93% 0 0);
+  --color-sms-gray-foreground: oklch(15% 0 0);
+  --color-nav-focus: oklch(75% 0.15 55);
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.375rem;
+}
+
+/* Default Dark */
+:root.dark {
+  --color-background: oklch(14% 0 0);
+  --color-foreground: oklch(95% 0 0);
+  --color-card: oklch(18% 0 0);
+  --color-card-foreground: oklch(95% 0 0);
+  --color-popover: oklch(18% 0 0);
+  --color-popover-foreground: oklch(95% 0 0);
+  --color-primary: oklch(60% 0.18 250);
+  --color-primary-foreground: oklch(100% 0 0);
+  --color-secondary: oklch(22% 0.01 250);
+  --color-secondary-foreground: oklch(95% 0 0);
+  --color-muted: oklch(22% 0 0);
+  --color-muted-foreground: oklch(60% 0 0);
+  --color-accent: oklch(22% 0.01 250);
+  --color-accent-foreground: oklch(95% 0 0);
+  --color-destructive: oklch(55% 0.25 25);
+  --color-destructive-foreground: oklch(98% 0 0);
+  --color-border: oklch(25% 0 0);
+  --color-input: oklch(22% 0 0);
+  --color-ring: oklch(60% 0.18 250);
+  --color-sidebar: oklch(12% 0.005 250);
+  --color-imessage-blue: oklch(58% 0.22 250);
+  --color-imessage-blue-foreground: oklch(100% 0 0);
+  --color-sms-gray: oklch(25% 0 0);
+  --color-sms-gray-foreground: oklch(95% 0 0);
+  --color-nav-focus: oklch(75% 0.15 55);
+}
+
+/* ========================================
+   Tokyo Night
+   ======================================== */
+:root.theme-tokyo-night {
+  --color-background: #1a1b26;
+  --color-foreground: #c0caf5;
+  --color-card: #24283b;
+  --color-card-foreground: #c0caf5;
+  --color-popover: #24283b;
+  --color-popover-foreground: #c0caf5;
+  --color-primary: #7aa2f7;
+  --color-primary-foreground: #1a1b26;
+  --color-secondary: #292e42;
+  --color-secondary-foreground: #c0caf5;
+  --color-muted: #292e42;
+  --color-muted-foreground: #565f89;
+  --color-accent: #292e42;
+  --color-accent-foreground: #c0caf5;
+  --color-destructive: #f7768e;
+  --color-destructive-foreground: #1a1b26;
+  --color-border: #3b4261;
+  --color-input: #292e42;
+  --color-ring: #7aa2f7;
+  --color-sidebar: #16161e;
+  --color-imessage-blue: #7aa2f7;
+  --color-imessage-blue-foreground: #1a1b26;
+  --color-sms-gray: #292e42;
+  --color-sms-gray-foreground: #c0caf5;
+  --color-nav-focus: #ff9e64;
+}
+
+/* ========================================
+   Catppuccin Mocha (Dark)
+   ======================================== */
+:root.theme-catppuccin {
+  --color-background: #1e1e2e;
+  --color-foreground: #cdd6f4;
+  --color-card: #313244;
+  --color-card-foreground: #cdd6f4;
+  --color-popover: #313244;
+  --color-popover-foreground: #cdd6f4;
+  --color-primary: #cba6f7;
+  --color-primary-foreground: #1e1e2e;
+  --color-secondary: #45475a;
+  --color-secondary-foreground: #cdd6f4;
+  --color-muted: #45475a;
+  --color-muted-foreground: #a6adc8;
+  --color-accent: #45475a;
+  --color-accent-foreground: #cdd6f4;
+  --color-destructive: #f38ba8;
+  --color-destructive-foreground: #1e1e2e;
+  --color-border: #585b70;
+  --color-input: #45475a;
+  --color-ring: #cba6f7;
+  --color-sidebar: #181825;
+  --color-imessage-blue: #89b4fa;
+  --color-imessage-blue-foreground: #1e1e2e;
+  --color-sms-gray: #45475a;
+  --color-sms-gray-foreground: #cdd6f4;
+  --color-nav-focus: #f9e2af;
+}
+
+/* ========================================
+   Catppuccin Latte (Light)
+   ======================================== */
+:root.theme-catppuccin-latte {
+  --color-background: #eff1f5;
+  --color-foreground: #4c4f69;
+  --color-card: #e6e9ef;
+  --color-card-foreground: #4c4f69;
+  --color-popover: #e6e9ef;
+  --color-popover-foreground: #4c4f69;
+  --color-primary: #8839ef;
+  --color-primary-foreground: #eff1f5;
+  --color-secondary: #ccd0da;
+  --color-secondary-foreground: #4c4f69;
+  --color-muted: #ccd0da;
+  --color-muted-foreground: #6c6f85;
+  --color-accent: #ccd0da;
+  --color-accent-foreground: #4c4f69;
+  --color-destructive: #d20f39;
+  --color-destructive-foreground: #eff1f5;
+  --color-border: #bcc0cc;
+  --color-input: #ccd0da;
+  --color-ring: #8839ef;
+  --color-sidebar: #dce0e8;
+  --color-imessage-blue: #1e66f5;
+  --color-imessage-blue-foreground: #eff1f5;
+  --color-sms-gray: #ccd0da;
+  --color-sms-gray-foreground: #4c4f69;
+  --color-nav-focus: #df8e1d;
+}
+
+/* ========================================
+   Everforest
+   ======================================== */
+:root.theme-everforest {
+  --color-background: #2d353b;
+  --color-foreground: #d3c6aa;
+  --color-card: #343f44;
+  --color-card-foreground: #d3c6aa;
+  --color-popover: #343f44;
+  --color-popover-foreground: #d3c6aa;
+  --color-primary: #a7c080;
+  --color-primary-foreground: #2d353b;
+  --color-secondary: #3d484d;
+  --color-secondary-foreground: #d3c6aa;
+  --color-muted: #3d484d;
+  --color-muted-foreground: #859289;
+  --color-accent: #3d484d;
+  --color-accent-foreground: #d3c6aa;
+  --color-destructive: #e67e80;
+  --color-destructive-foreground: #2d353b;
+  --color-border: #475258;
+  --color-input: #3d484d;
+  --color-ring: #a7c080;
+  --color-sidebar: #272e33;
+  --color-imessage-blue: #7fbbb3;
+  --color-imessage-blue-foreground: #2d353b;
+  --color-sms-gray: #3d484d;
+  --color-sms-gray-foreground: #d3c6aa;
+  --color-nav-focus: #dbbc7f;
+}
+
+/* ========================================
+   Gruvbox
+   ======================================== */
+:root.theme-gruvbox {
+  --color-background: #282828;
+  --color-foreground: #ebdbb2;
+  --color-card: #3c3836;
+  --color-card-foreground: #ebdbb2;
+  --color-popover: #3c3836;
+  --color-popover-foreground: #ebdbb2;
+  --color-primary: #fabd2f;
+  --color-primary-foreground: #282828;
+  --color-secondary: #504945;
+  --color-secondary-foreground: #ebdbb2;
+  --color-muted: #504945;
+  --color-muted-foreground: #a89984;
+  --color-accent: #504945;
+  --color-accent-foreground: #ebdbb2;
+  --color-destructive: #fb4934;
+  --color-destructive-foreground: #282828;
+  --color-border: #665c54;
+  --color-input: #504945;
+  --color-ring: #fabd2f;
+  --color-sidebar: #1d2021;
+  --color-imessage-blue: #83a598;
+  --color-imessage-blue-foreground: #282828;
+  --color-sms-gray: #504945;
+  --color-sms-gray-foreground: #ebdbb2;
+  --color-nav-focus: #fe8019;
+}
+
+/* ========================================
+   Kanagawa
+   ======================================== */
+:root.theme-kanagawa {
+  --color-background: #1f1f28;
+  --color-foreground: #dcd7ba;
+  --color-card: #2a2a37;
+  --color-card-foreground: #dcd7ba;
+  --color-popover: #2a2a37;
+  --color-popover-foreground: #dcd7ba;
+  --color-primary: #7e9cd8;
+  --color-primary-foreground: #1f1f28;
+  --color-secondary: #363646;
+  --color-secondary-foreground: #dcd7ba;
+  --color-muted: #363646;
+  --color-muted-foreground: #727169;
+  --color-accent: #363646;
+  --color-accent-foreground: #dcd7ba;
+  --color-destructive: #e46876;
+  --color-destructive-foreground: #1f1f28;
+  --color-border: #54546d;
+  --color-input: #363646;
+  --color-ring: #7e9cd8;
+  --color-sidebar: #16161d;
+  --color-imessage-blue: #7e9cd8;
+  --color-imessage-blue-foreground: #1f1f28;
+  --color-sms-gray: #363646;
+  --color-sms-gray-foreground: #dcd7ba;
+  --color-nav-focus: #ffa066;
+}
+
+/* ========================================
+   Nord
+   ======================================== */
+:root.theme-nord {
+  --color-background: #2e3440;
+  --color-foreground: #eceff4;
+  --color-card: #3b4252;
+  --color-card-foreground: #eceff4;
+  --color-popover: #3b4252;
+  --color-popover-foreground: #eceff4;
+  --color-primary: #88c0d0;
+  --color-primary-foreground: #2e3440;
+  --color-secondary: #434c5e;
+  --color-secondary-foreground: #eceff4;
+  --color-muted: #434c5e;
+  --color-muted-foreground: #d8dee9;
+  --color-accent: #434c5e;
+  --color-accent-foreground: #eceff4;
+  --color-destructive: #bf616a;
+  --color-destructive-foreground: #eceff4;
+  --color-border: #4c566a;
+  --color-input: #434c5e;
+  --color-ring: #88c0d0;
+  --color-sidebar: #242933;
+  --color-imessage-blue: #81a1c1;
+  --color-imessage-blue-foreground: #2e3440;
+  --color-sms-gray: #434c5e;
+  --color-sms-gray-foreground: #eceff4;
+  --color-nav-focus: #ebcb8b;
+}
+
+/* ========================================
+   Rose Pine
+   ======================================== */
+:root.theme-rose-pine {
+  --color-background: #191724;
+  --color-foreground: #e0def4;
+  --color-card: #1f1d2e;
+  --color-card-foreground: #e0def4;
+  --color-popover: #1f1d2e;
+  --color-popover-foreground: #e0def4;
+  --color-primary: #c4a7e7;
+  --color-primary-foreground: #191724;
+  --color-secondary: #26233a;
+  --color-secondary-foreground: #e0def4;
+  --color-muted: #26233a;
+  --color-muted-foreground: #908caa;
+  --color-accent: #26233a;
+  --color-accent-foreground: #e0def4;
+  --color-destructive: #eb6f92;
+  --color-destructive-foreground: #191724;
+  --color-border: #403d52;
+  --color-input: #26233a;
+  --color-ring: #c4a7e7;
+  --color-sidebar: #13111b;
+  --color-imessage-blue: #9ccfd8;
+  --color-imessage-blue-foreground: #191724;
+  --color-sms-gray: #26233a;
+  --color-sms-gray-foreground: #e0def4;
+  --color-nav-focus: #f6c177;
+}
+
+/* ========================================
+   Matte Black
+   ======================================== */
+:root.theme-matte-black {
+  --color-background: #0a0a0a;
+  --color-foreground: #e0e0e0;
+  --color-card: #141414;
+  --color-card-foreground: #e0e0e0;
+  --color-popover: #141414;
+  --color-popover-foreground: #e0e0e0;
+  --color-primary: #ffffff;
+  --color-primary-foreground: #0a0a0a;
+  --color-secondary: #1e1e1e;
+  --color-secondary-foreground: #e0e0e0;
+  --color-muted: #1e1e1e;
+  --color-muted-foreground: #808080;
+  --color-accent: #1e1e1e;
+  --color-accent-foreground: #e0e0e0;
+  --color-destructive: #ff4444;
+  --color-destructive-foreground: #0a0a0a;
+  --color-border: #2a2a2a;
+  --color-input: #1e1e1e;
+  --color-ring: #ffffff;
+  --color-sidebar: #050505;
+  --color-imessage-blue: #3b82f6;
+  --color-imessage-blue-foreground: #ffffff;
+  --color-sms-gray: #1e1e1e;
+  --color-sms-gray-foreground: #e0e0e0;
+  --color-nav-focus: #888888;
+}
+
+/* ========================================
+   Flexoki Light
+   ======================================== */
+:root.theme-flexoki-light {
+  --color-background: #fffcf0;
+  --color-foreground: #100f0f;
+  --color-card: #f2f0e5;
+  --color-card-foreground: #100f0f;
+  --color-popover: #f2f0e5;
+  --color-popover-foreground: #100f0f;
+  --color-primary: #205ea6;
+  --color-primary-foreground: #fffcf0;
+  --color-secondary: #e6e4d9;
+  --color-secondary-foreground: #100f0f;
+  --color-muted: #e6e4d9;
+  --color-muted-foreground: #6f6e69;
+  --color-accent: #e6e4d9;
+  --color-accent-foreground: #100f0f;
+  --color-destructive: #af3029;
+  --color-destructive-foreground: #fffcf0;
+  --color-border: #cecdc3;
+  --color-input: #e6e4d9;
+  --color-ring: #205ea6;
+  --color-sidebar: #f2f0e5;
+  --color-imessage-blue: #205ea6;
+  --color-imessage-blue-foreground: #fffcf0;
+  --color-sms-gray: #e6e4d9;
+  --color-sms-gray-foreground: #100f0f;
+  --color-nav-focus: #d0a215;
+}
+
+/* ========================================
+   Ristretto (Coffee-inspired dark theme)
+   ======================================== */
+:root.theme-ristretto {
+  --color-background: #1c1210;
+  --color-foreground: #d4c4b7;
+  --color-card: #2a1f1a;
+  --color-card-foreground: #d4c4b7;
+  --color-popover: #2a1f1a;
+  --color-popover-foreground: #d4c4b7;
+  --color-primary: #c49a6c;
+  --color-primary-foreground: #1c1210;
+  --color-secondary: #3d2e26;
+  --color-secondary-foreground: #d4c4b7;
+  --color-muted: #3d2e26;
+  --color-muted-foreground: #8b7355;
+  --color-accent: #3d2e26;
+  --color-accent-foreground: #d4c4b7;
+  --color-destructive: #c75d5d;
+  --color-destructive-foreground: #1c1210;
+  --color-border: #4d3d33;
+  --color-input: #3d2e26;
+  --color-ring: #c49a6c;
+  --color-sidebar: #150e0c;
+  --color-imessage-blue: #7db8c4;
+  --color-imessage-blue-foreground: #1c1210;
+  --color-sms-gray: #3d2e26;
+  --color-sms-gray-foreground: #d4c4b7;
+  --color-nav-focus: #e8a55d;
+}
+
+/* ========================================
+   Osaka Jade
+   ======================================== */
+:root.theme-osaka-jade {
+  --color-background: #161821;
+  --color-foreground: #c6c8d1;
+  --color-card: #1e2132;
+  --color-card-foreground: #c6c8d1;
+  --color-popover: #1e2132;
+  --color-popover-foreground: #c6c8d1;
+  --color-primary: #b4be82;
+  --color-primary-foreground: #161821;
+  --color-secondary: #2a2e3f;
+  --color-secondary-foreground: #c6c8d1;
+  --color-muted: #2a2e3f;
+  --color-muted-foreground: #6b7089;
+  --color-accent: #2a2e3f;
+  --color-accent-foreground: #c6c8d1;
+  --color-destructive: #e27878;
+  --color-destructive-foreground: #161821;
+  --color-border: #3d4257;
+  --color-input: #2a2e3f;
+  --color-ring: #b4be82;
+  --color-sidebar: #0f1117;
+  --color-imessage-blue: #89b8c2;
+  --color-imessage-blue-foreground: #161821;
+  --color-sms-gray: #2a2e3f;
+  --color-sms-gray-foreground: #c6c8d1;
+  --color-nav-focus: #e2a478;
+}
+
+/* ========================================
+   Hackerman (Matrix-style green)
+   ======================================== */
+:root.theme-hackerman {
+  --color-background: #0a0a0a;
+  --color-foreground: #00ff00;
+  --color-card: #0f0f0f;
+  --color-card-foreground: #00ff00;
+  --color-popover: #0f0f0f;
+  --color-popover-foreground: #00ff00;
+  --color-primary: #00ff00;
+  --color-primary-foreground: #0a0a0a;
+  --color-secondary: #1a1a1a;
+  --color-secondary-foreground: #00ff00;
+  --color-muted: #1a1a1a;
+  --color-muted-foreground: #00aa00;
+  --color-accent: #1a1a1a;
+  --color-accent-foreground: #00ff00;
+  --color-destructive: #ff0000;
+  --color-destructive-foreground: #0a0a0a;
+  --color-border: #00aa00;
+  --color-input: #1a1a1a;
+  --color-ring: #00ff00;
+  --color-sidebar: #050505;
+  --color-imessage-blue: #00ff00;
+  --color-imessage-blue-foreground: #0a0a0a;
+  --color-sms-gray: #1a1a1a;
+  --color-sms-gray-foreground: #00ff00;
+  --color-nav-focus: #00ffff;
+}
+
+/* ========================================
+   Ethereal (Soft purple/blue mist)
+   ======================================== */
+:root.theme-ethereal {
+  --color-background: #1a1a2e;
+  --color-foreground: #eaeaea;
+  --color-card: #232342;
+  --color-card-foreground: #eaeaea;
+  --color-popover: #232342;
+  --color-popover-foreground: #eaeaea;
+  --color-primary: #a78bfa;
+  --color-primary-foreground: #1a1a2e;
+  --color-secondary: #2d2d50;
+  --color-secondary-foreground: #eaeaea;
+  --color-muted: #2d2d50;
+  --color-muted-foreground: #9090b0;
+  --color-accent: #2d2d50;
+  --color-accent-foreground: #eaeaea;
+  --color-destructive: #f472b6;
+  --color-destructive-foreground: #1a1a2e;
+  --color-border: #3d3d66;
+  --color-input: #2d2d50;
+  --color-ring: #a78bfa;
+  --color-sidebar: #12121f;
+  --color-imessage-blue: #818cf8;
+  --color-imessage-blue-foreground: #1a1a2e;
+  --color-sms-gray: #2d2d50;
+  --color-sms-gray-foreground: #eaeaea;
+  --color-nav-focus: #f9a8d4;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* TV-optimized styles */
+@media (min-width: 1920px) {
+  :root {
+    font-size: 18px;
+  }
+}
+
+/* Focus styles for keyboard/remote navigation */
+*:focus-visible {
+  @apply outline-none ring-2 ring-ring ring-offset-2;
+}
