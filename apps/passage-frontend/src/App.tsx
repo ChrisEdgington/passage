@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite';
 import { ConversationList } from '@/components/ConversationList';
 import { MessageThread } from '@/components/MessageThread';
 import { MessageComposer } from '@/components/MessageComposer';
-import { WelcomePage } from '@/components/WelcomePage';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { MessagesController } from '@/controller';
 import { initializeTheme } from '@/lib/theme';
@@ -176,11 +175,6 @@ const App = observer(function App() {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [sidebarWidth]);
-
-  // Show welcome page if not configured
-  if (controller.connectionStatus === 'unconfigured') {
-    return <WelcomePage />;
-  }
 
   // Show loading screen while initially connecting (no data yet)
   if (controller.connectionStatus === 'connecting' && controller.conversations.length === 0) {

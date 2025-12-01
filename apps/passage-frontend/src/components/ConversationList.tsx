@@ -3,7 +3,6 @@ import { MessagesController } from '@/controller';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ThemeSelector } from '@/components/ThemeSelector';
-import { SettingsDropdown } from '@/components/SettingsDropdown';
 import { AboutModal } from '@/components/AboutModal';
 import { cn } from '@/lib/utils';
 import { DateTime } from 'luxon';
@@ -112,7 +111,6 @@ export const ConversationList = observer(({ isNavMode }: { isNavMode: boolean })
         </div>
         <div className="flex items-center gap-1">
           <AboutModal />
-          <SettingsDropdown />
           <ThemeSelector />
         </div>
       </div>

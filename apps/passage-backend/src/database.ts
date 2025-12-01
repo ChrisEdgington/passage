@@ -474,6 +474,52 @@ export class MessagesDatabase {
     return identifier;
   }
 
+  // Get conversations that have been updated since a given timestamp
+  // Returns only conversations with messages newer than lastCheckTime
+  getRecentlyChangedConversations(lastCheckTime: number): Conversation[] {
+    // Convert Unix timestamp (ms) to Apple's timestamp format (nanoseconds since 2001-01-01)
+    const appleEpoch = 978307200000; // 2001-01-01 in Unix time (ms)
+    // Subtract 5 seconds buffer to account for timing differences
+    const bufferedCheckTime = lastCheckTime - 5000;
+    const appleTimestamp = (bufferedCheckTime - appleEpoch) * 1000000;
+
+    const query = `
+      SELECT DISTINCT
+        c.ROWID as chat_id,
+        c.chat_identifier,
+        c.display_name,
+        c.group_id,
+        (SELECT COUNT(*) FROM chat_message_join cmj2
+         JOIN message m2 ON cmj2.message_id = m2.ROWID
+         WHERE cmj2.chat_id = c.ROWID AND m2.is_read = 0 AND m2.is_from_me = 0) as unread_count,
+        (SELECT MAX(m3.date) FROM chat_message_join cmj3
+         JOIN message m3 ON cmj3.message_id = m3.ROWID
+         WHERE cmj3.chat_id = c.ROWID) as last_message_date
+      FROM chat c
+      JOIN chat_message_join cmj ON cmj.chat_id = c.ROWID
+      JOIN message m ON cmj.message_id = m.ROWID
+      WHERE m.date > ?
+      ORDER BY last_message_date DESC
+    `;
+
+    const rows = this.db.prepare(query).all(appleTimestamp) as any[];
+
+    return rows.map((row) => {
+      const participants = this.getChatParticipants(row.chat_id);
+      const lastMessage = this.getLastMessageForChat(row.chat_id);
+
+      return {
+        id: String(row.chat_id),
+        displayName: row.display_name || this.generateDisplayName(participants),
+        participants,
+        lastMessage,
+        unreadCount: row.unread_count || 0,
+        isGroup: participants.length > 2,
+        groupPhotoPath: undefined,
+      };
+    });
+  }
+
   // Close the database connection
   close(): void {
     this.db.close();

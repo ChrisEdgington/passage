@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "pnpm --parallel -r dev",
     "build": "pnpm --parallel -r build",
+    "build:unified": "pnpm -r build && rm -rf apps/passage-backend/dist/frontend && cp -r apps/passage-frontend/dist apps/passage-backend/dist/frontend",
+    "start": "node apps/passage-backend/dist/server.js",
     "lint": "biome check --write .",
     "format": "biome format --write ."
   },

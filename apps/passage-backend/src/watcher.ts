@@ -23,14 +23,16 @@ export class MessagesDatabaseWatcher extends EventEmitter {
       return;
     }
 
-    console.log(`Starting watcher for: ${MESSAGES_DB_PATH}`);
+    // Watch both the main DB and the WAL file (SQLite writes to WAL first)
+    const walPath = `${MESSAGES_DB_PATH}-wal`;
+    console.log(`Starting watcher for: ${MESSAGES_DB_PATH} and ${walPath}`);
 
     // Use polling for SQLite databases - native fs events are unreliable for DB files on macOS
-    this.watcher = watch(MESSAGES_DB_PATH, {
+    this.watcher = watch([MESSAGES_DB_PATH, walPath], {
       persistent: true,
       usePolling: true,
-      interval: 1000, // Poll every second
-      binaryInterval: 1000,
+      interval: 500, // Poll every 500ms for faster detection
+      binaryInterval: 500,
     });
 
     this.watcher.on('change', (path) => {

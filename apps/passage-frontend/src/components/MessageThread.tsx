@@ -119,7 +119,7 @@ function ReactionsBadge({ reactions, isFromMe }: { reactions: Reaction[]; isFrom
   );
 }
 
-// Image lightbox component
+// Image lightbox component - full viewport
 function ImageLightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -131,12 +131,12 @@ function ImageLightbox({ src, alt, onClose }: { src: string; alt: string; onClos
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+      className="fixed inset-0 z-50 bg-black flex items-center justify-center p-2"
       onClick={onClose}
     >
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 p-2 text-white hover:bg-white/20 rounded-full transition-colors"
+        className="absolute top-2 right-2 z-10 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors"
         aria-label="Close"
       >
         <X className="w-8 h-8" />
@@ -144,7 +144,7 @@ function ImageLightbox({ src, alt, onClose }: { src: string; alt: string; onClos
       <img
         src={src}
         alt={alt}
-        className="max-w-[95vw] max-h-[95vh] object-contain"
+        className="w-full h-full object-contain"
         onClick={(e) => e.stopPropagation()}
       />
     </div>

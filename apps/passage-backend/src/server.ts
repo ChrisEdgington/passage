@@ -3,14 +3,19 @@ import { createServer } from 'node:http';
 import { WebSocketServer, WebSocket } from 'ws';
 import cors from 'cors';
 import multer from 'multer';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
 import { existsSync, mkdirSync } from 'node:fs';
 import { readFile, unlink } from 'node:fs/promises';
 import { homedir, tmpdir } from 'node:os';
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
+import { fileURLToPath } from 'node:url';
 
 const execAsync = promisify(exec);
+
+// ESM equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Directory for uploads
 const UPLOADS_DIR = join(tmpdir(), 'passage-uploads');
@@ -306,6 +311,31 @@ apiV1.get('/attachments/*', async (req, res) => {
   }
 });
 
+// Serve frontend static files if they exist
+// In production build, frontend is at ../frontend (relative to dist/)
+// In development, it's at ../../passage-frontend/dist
+const frontendDistPaths = [
+  join(__dirname, '..', 'frontend'),           // Production: dist/frontend
+  join(__dirname, '..', '..', 'passage-frontend', 'dist'),  // Dev: from src/ to passage-frontend/dist
+];
+
+const frontendPath = frontendDistPaths.find((p) => existsSync(join(p, 'index.html')));
+if (frontendPath) {
+  log.info(`Serving frontend from: ${frontendPath}`);
+  app.use(express.static(frontendPath));
+
+  // SPA fallback - serve index.html for non-API routes
+  app.get('*', (req, res, next) => {
+    // Skip API routes and WebSocket path
+    if (req.path.startsWith('/api') || req.path === '/ws' || req.path === '/health') {
+      return next();
+    }
+    res.sendFile(join(frontendPath, 'index.html'));
+  });
+} else {
+  log.info('No frontend build found, running API-only mode');
+}
+
 // WebSocket connection handling
 const clients = new Set<WebSocket>();
 
@@ -395,30 +425,32 @@ try {
 
 // Watch for database changes and notify clients
 watcher.on('change', () => {
-  log.info('Database change detected, fetching latest conversations...');
+  log.info('Database change detected, fetching conversations...');
 
   try {
-    // Fetch the latest conversations and broadcast to all clients
+    // Fetch all conversations and check which ones have new messages
     const conversations = db.getConversations();
-    log.debug(`Fetched ${conversations.length} conversations`);
 
     let newMessageCount = 0;
+    let updatedCount = 0;
 
-    // Broadcast each conversation update
     for (const conversation of conversations) {
-      const message: WebSocketMessage = {
-        type: 'conversation_updated',
-        payload: conversation,
-      };
-      broadcast(message);
-
       // Only broadcast new_message if it's actually a NEW message we haven't seen before
       if (conversation.lastMessage) {
         const lastSeenId = lastSeenMessageIds.get(conversation.id);
         const currentMessageId = conversation.lastMessage.id;
 
         if (lastSeenId !== currentMessageId) {
-          log.info(`NEW message in conversation ${conversation.id}: "${conversation.lastMessage.text?.slice(0, 30) || '[no text]'}..." from ${conversation.lastMessage.isFromMe ? 'me' : conversation.lastMessage.senderName} (id: ${currentMessageId})`);
+          // This conversation has a new message - broadcast both updates
+          updatedCount++;
+
+          const convMessage: WebSocketMessage = {
+            type: 'conversation_updated',
+            payload: conversation,
+          };
+          broadcast(convMessage);
+
+          log.info(`NEW message in conversation ${conversation.id}: "${conversation.lastMessage.text?.slice(0, 30) || '[no text]'}..." from ${conversation.lastMessage.isFromMe ? 'me' : conversation.lastMessage.senderName}`);
           lastSeenMessageIds.set(conversation.id, currentMessageId);
           newMessageCount++;
 
@@ -427,12 +459,15 @@ watcher.on('change', () => {
             payload: conversation.lastMessage,
           };
           broadcast(messageUpdate);
-        } else {
-          log.debug(`Skipping already-seen message ${currentMessageId} in conversation ${conversation.id}`);
         }
       }
     }
-    log.info(`Finished broadcasting updates: ${newMessageCount} new messages across ${conversations.length} conversations`);
+
+    if (newMessageCount > 0) {
+      log.info(`Broadcasted ${newMessageCount} new message(s) in ${updatedCount} conversation(s)`);
+    } else {
+      log.debug('No new messages found');
+    }
   } catch (error: any) {
     log.error('Error processing database change:', error);
     const errorMessage: WebSocketMessage = {

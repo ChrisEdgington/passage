@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Passage - iMessage from anywhere</title>
+  <meta name="description" content="Access your iMessage and SMS conversations from any browser on your local network. A beautiful, native macOS app.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-subtle: #141414;
+      --border: #262626;
+      --text: #fafafa;
+      --text-muted: #a3a3a3;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.4);
+      --imessage-blue: #007aff;
+      --imessage-green: #30d158;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle grid background */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Gradient orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb-1 {
+      width: 600px;
+      height: 600px;
+      background: var(--imessage-blue);
+      top: -200px;
+      right: -100px;
+    }
+
+    .orb-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--imessage-green);
+      bottom: -100px;
+      left: -100px;
+    }
+
+    /* Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .logo-icon {
+      font-size: 2rem;
+    }
+
+    .github-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .github-link:hover {
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+
+    .github-link svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 80px 0 60px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--imessage-green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, var(--imessage-blue), var(--imessage-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-description {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+
+    /* CTA Buttons */
+    .cta-group {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--imessage-blue);
+      color: white;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--accent-glow);
+    }
+
+    .btn-secondary {
+      background: var(--bg-subtle);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--text-muted);
+    }
+
+    /* Screenshot mockup */
+    .screenshot-container {
+      margin-top: 60px;
+      perspective: 1000px;
+    }
+
+    .screenshot {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 20px 50px -10px rgba(0,0,0,0.5),
+        0 0 100px -20px var(--accent-glow);
+      transform: rotateX(5deg);
+    }
+
+    .screenshot-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .window-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .window-dot.red { background: #ff5f56; }
+    .window-dot.yellow { background: #ffbd2e; }
+    .window-dot.green { background: #27c93f; }
+
+    .screenshot-content {
+      display: flex;
+      height: 500px;
+    }
+
+    .mock-sidebar {
+      width: 300px;
+      background: var(--bg);
+      border-right: 1px solid var(--border);
+      padding: 16px 0;
+    }
+
+    .mock-conversation {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .mock-conversation:hover {
+      background: var(--bg-subtle);
+    }
+
+    .mock-conversation.active {
+      background: rgba(59, 130, 246, 0.15);
+    }
+
+    .mock-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--imessage-blue), var(--imessage-green));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    .mock-preview {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mock-name {
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .mock-text {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mock-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .mock-messages {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px;
+      gap: 12px;
+    }
+
+    .mock-bubble {
+      max-width: 70%;
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-size: 0.95rem;
+    }
+
+    .mock-bubble.sent {
+      align-self: flex-end;
+      background: var(--imessage-blue);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .mock-bubble.received {
+      align-self: flex-start;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Features */
+    .features {
+      padding: 100px 0;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .features-header h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .features-header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--text-muted);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Install section */
+    .install {
+      padding: 80px 0;
+    }
+
+    .install-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px;
+      text-align: center;
+    }
+
+    .install-card h2 {
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+
+    .install-card > p {
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .install-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .install-step {
+      display: flex;
+      gap: 16px;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--imessage-blue);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+
+    .step-content p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .code-block {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      margin-top: 8px;
+      overflow-x: auto;
+    }
+
+    /* Requirements callout */
+    .requirements {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 32px;
+      text-align: left;
+    }
+
+    .requirements h4 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--imessage-blue);
+    }
+
+    .requirements ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .requirements li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .requirements li::before {
+      content: '→';
+      color: var(--imessage-blue);
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .screenshot-content {
+        height: 400px;
+      }
+
+      .mock-sidebar {
+        width: 100%;
+      }
+
+      .mock-messages {
+        display: none;
+      }
+
+      .install-card {
+        padding: 32px 24px;
+      }
+
+      .cta-group {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="container">
+    <header>
+      <a href="/" class="logo">
+        <span class="logo-icon">💬</span>
+        <span>Passage</span>
+      </a>
+      <a href="https://github.com/ChrisEdgington/passage" class="github-link" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+        </svg>
+        View on GitHub
+      </a>
+    </header>
+
+    <section class="hero">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Open source & local-first
+      </div>
+      <h1>iMessage from <span>anywhere</span></h1>
+      <p class="hero-description">
+        Access your iMessage and SMS conversations from any browser on your network.
+        TV, Linux desktop, tablet—if it has a browser, you can message.
+      </p>
+      <div class="cta-group">
+        <a href="#install" class="btn btn-primary">
+          Get Started
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <a href="https://github.com/ChrisEdgington/passage" class="btn btn-secondary" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          Star on GitHub
+        </a>
+      </div>
+
+      <div class="screenshot-container">
+        <div class="screenshot">
+          <div class="screenshot-header">
+            <div class="window-dot red"></div>
+            <div class="window-dot yellow"></div>
+            <div class="window-dot green"></div>
+          </div>
+          <div class="screenshot-content">
+            <div class="mock-sidebar">
+              <div class="mock-conversation active">
+                <div class="mock-avatar">S</div>
+                <div class="mock-preview">
+                  <div class="mock-name">Sarah Chen</div>
+                  <div class="mock-text">That sounds great! See you at 7</div>
+                </div>
+                <div class="mock-time">2m</div>
+              </div>
+              <div class="mock-conversation">
+                <div class="mock-avatar">M</div>
+                <div class="mock-preview">
+                  <div class="mock-name">Mom</div>
+                  <div class="mock-text">Don't forget to call grandma!</div>
+                </div>
+                <div class="mock-time">1h</div>
+              </div>
+              <div class="mock-conversation">
+                <div class="mock-avatar">🏠</div>
+                <div class="mock-preview">
+                  <div class="mock-name">Family Group</div>
+                  <div class="mock-text">Alex: Anyone want pizza?</div>
+                </div>
+                <div class="mock-time">3h</div>
+              </div>
+              <div class="mock-conversation">
+                <div class="mock-avatar">J</div>
+                <div class="mock-preview">
+                  <div class="mock-name">Jake Wilson</div>
+                  <div class="mock-text">The project looks amazing!</div>
+                </div>
+                <div class="mock-time">1d</div>
+              </div>
+            </div>
+            <div class="mock-messages">
+              <div class="mock-bubble received">Hey! Are we still on for dinner tonight?</div>
+              <div class="mock-bubble sent">Yes! Looking forward to it</div>
+              <div class="mock-bubble sent">Should I bring anything?</div>
+              <div class="mock-bubble received">Just yourself! I'm making pasta</div>
+              <div class="mock-bubble received">That sounds great! See you at 7</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="features-header">
+        <h2>Why Passage?</h2>
+        <p>A better way to access your messages from any device</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Private & Local</h3>
+          <p>Runs entirely on your Mac. Messages never leave your network. No cloud, no accounts, no tracking.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Real-time Sync</h3>
+          <p>WebSocket-powered live updates. See new messages instantly as they arrive on your Mac.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🖥️</div>
+          <h3>Big Screen Ready</h3>
+          <p>Large touch targets and keyboard navigation. Perfect for TVs, tablets, or your Linux desktop.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>iMessage & SMS</h3>
+          <p>Full support for both iMessage (blue bubbles) and SMS (green bubbles). Send photos too.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⌨️</div>
+          <h3>Vim Keybindings</h3>
+          <p>Navigate with j/k, jump with gg/G, compose with i. Power users rejoice.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌙</div>
+          <h3>Dark Mode</h3>
+          <p>Beautiful dark interface that's easy on the eyes. Follows your system preference.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="install" id="install">
+      <div class="install-card">
+        <h2>Get Started in 2 Minutes</h2>
+        <p>A few commands and you're up and running</p>
+
+        <div class="install-steps">
+          <div class="install-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Clone the repository</h4>
+              <p>Get the source code from GitHub</p>
+              <div class="code-block">git clone https://github.com/ChrisEdgington/passage.git && cd passage</div>
+            </div>
+          </div>
+
+          <div class="install-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Install dependencies</h4>
+              <p>Uses pnpm for fast, efficient package management</p>
+              <div class="code-block">pnpm install</div>
+            </div>
+          </div>
+
+          <div class="install-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Build and run</h4>
+              <p>Build the unified app and start the server</p>
+              <div class="code-block">pnpm build:unified && pnpm start</div>
+            </div>
+          </div>
+
+          <div class="install-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>Open in your browser</h4>
+              <p>Access from any device on your network</p>
+              <div class="code-block">http://YOUR_MAC_IP:3000</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="requirements">
+          <h4>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            Requirements
+          </h4>
+          <ul>
+            <li>macOS with Messages.app signed into iCloud</li>
+            <li>Terminal app needs Full Disk Access permission</li>
+            <li>Node.js 18+ and pnpm installed</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>
+        Built with Claude Code ·
+        <a href="https://github.com/ChrisEdgington/passage">Source on GitHub</a> ·
+        MIT License
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

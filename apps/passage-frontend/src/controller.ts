@@ -1,13 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import type { Conversation, Message, WebSocketMessage } from '@passage/shared-types';
-import {
-  getStoredServerUrl,
-  setStoredServerUrl,
-  clearStoredServerUrl,
-  normalizeServerUrl,
-  buildApiUrl,
-  buildWsUrl,
-} from '@/lib/config';
 
 // Simple logger with timestamps
 const log = {
@@ -17,7 +9,7 @@ const log = {
   debug: (msg: string, ...args: unknown[]) => console.debug(`[Controller] ${msg}`, ...args),
 };
 
-export type ConnectionStatus = 'unconfigured' | 'connecting' | 'connected' | 'error' | 'reconnecting';
+export type ConnectionStatus = 'connecting' | 'connected' | 'error' | 'reconnecting';
 
 // Pending message with sending status
 export interface PendingMessage extends Message {
@@ -26,9 +18,8 @@ export interface PendingMessage extends Message {
 }
 
 export class MessagesController {
-  // Server configuration
-  serverUrl: string | null = null;
-  connectionStatus: ConnectionStatus = 'unconfigured';
+  // Connection state
+  connectionStatus: ConnectionStatus = 'connecting';
   connectionError: string | null = null;
 
   // State
@@ -45,16 +36,8 @@ export class MessagesController {
 
   private constructor() {
     makeAutoObservable(this);
-
-    // Load stored server URL on init
-    const storedUrl = getStoredServerUrl();
-    if (storedUrl) {
-      this.serverUrl = storedUrl;
-      this.connectionStatus = 'connecting';
-      this.connectWebSocket();
-    } else {
-      this.connectionStatus = 'unconfigured';
-    }
+    // Auto-connect on init (same-origin)
+    this.connectWebSocket();
   }
 
   static get instance(): MessagesController {
@@ -64,13 +47,14 @@ export class MessagesController {
     return MessagesController._instance;
   }
 
-  // Computed - dynamic URLs based on serverUrl
-  get apiBaseUrl(): string | null {
-    return this.serverUrl ? buildApiUrl(this.serverUrl) : null;
+  // Same-origin URLs
+  get apiBaseUrl(): string {
+    return window.location.origin;
   }
 
-  get wsUrl(): string | null {
-    return this.serverUrl ? buildWsUrl(this.serverUrl) : null;
+  get wsUrl(): string {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${window.location.host}/ws`;
   }
 
   get isConnected(): boolean {
@@ -88,73 +72,8 @@ export class MessagesController {
     return [...confirmed, ...pending];
   }
 
-  // Server configuration actions
-  async configureServer(inputUrl: string): Promise<boolean> {
-    const url = normalizeServerUrl(inputUrl);
-    log.info(`Configuring server: ${url}`);
-
-    this.serverUrl = url;
-    this.connectionStatus = 'connecting';
-    this.connectionError = null;
-
-    // Test connection before saving
-    try {
-      const response = await fetch(`${buildApiUrl(url)}/api/v1/conversations`, {
-        signal: AbortSignal.timeout(5000),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}`);
-      }
-
-      // Connection successful, save and connect WebSocket
-      log.info('Server connection test successful');
-      setStoredServerUrl(url);
-      this.connectWebSocket();
-      return true;
-    } catch (error: any) {
-      log.error('Server connection test failed:', error.message);
-      runInAction(() => {
-        this.connectionStatus = 'error';
-        this.connectionError = 'Could not connect to server. Make sure the backend is running.';
-        this.serverUrl = null;
-      });
-      return false;
-    }
-  }
-
-  disconnectServer(): void {
-    log.info('Disconnecting from server');
-
-    // Close WebSocket
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
-    }
-
-    // Clear stored config
-    clearStoredServerUrl();
-
-    // Reset all state
-    runInAction(() => {
-      this.serverUrl = null;
-      this.connectionStatus = 'unconfigured';
-      this.connectionError = null;
-      this.conversations = [];
-      this.messages.clear();
-      this.pendingMessages.clear();
-      this.selectedConversationId = null;
-      this.error = null;
-    });
-  }
-
   // Actions
   async fetchConversations(): Promise<void> {
-    if (!this.apiBaseUrl) {
-      log.warn('Cannot fetch conversations: no server configured');
-      return;
-    }
-
     log.info('Fetching conversations...');
     this.isLoading = true;
     this.error = null;
@@ -184,11 +103,6 @@ export class MessagesController {
   }
 
   async fetchMessages(conversationId: string): Promise<void> {
-    if (!this.apiBaseUrl) {
-      log.warn('Cannot fetch messages: no server configured');
-      return;
-    }
-
     log.info(`Fetching messages for conversation ${conversationId}...`);
     this.isLoading = true;
     this.error = null;
@@ -213,10 +127,6 @@ export class MessagesController {
   }
 
   async sendMessage(recipientId: string, text: string, attachmentPath?: string): Promise<void> {
-    if (!this.apiBaseUrl) {
-      throw new Error('No server configured');
-    }
-
     log.info(`Sending message to ${recipientId}:`, { text: text?.slice(0, 50), hasAttachment: !!attachmentPath });
     this.error = null;
 
@@ -342,11 +252,6 @@ export class MessagesController {
 
   // WebSocket connection
   private connectWebSocket(): void {
-    if (!this.wsUrl) {
-      log.warn('Cannot connect WebSocket: no server configured');
-      return;
-    }
-
     log.info(`Connecting to WebSocket at ${this.wsUrl}...`);
 
     runInAction(() => {
@@ -385,19 +290,11 @@ export class MessagesController {
 
     this.ws.onclose = (event) => {
       log.warn(`WebSocket disconnected (code: ${event.code}, reason: ${event.reason})`);
-
-      // Only reconnect if we still have a server configured
-      if (this.serverUrl) {
-        runInAction(() => {
-          this.connectionStatus = 'reconnecting';
-        });
-        log.info('Reconnecting in 3s...');
-        setTimeout(() => this.connectWebSocket(), 3000);
-      } else {
-        runInAction(() => {
-          this.connectionStatus = 'unconfigured';
-        });
-      }
+      runInAction(() => {
+        this.connectionStatus = 'reconnecting';
+      });
+      log.info('Reconnecting in 3s...');
+      setTimeout(() => this.connectWebSocket(), 3000);
     };
   }
 
@@ -488,6 +385,12 @@ export class MessagesController {
           } else {
             this.conversations.push(updatedConversation);
           }
+          // Re-sort by last message timestamp (newest first)
+          this.conversations.sort((a, b) => {
+            const aTime = a.lastMessage?.timestamp ?? 0;
+            const bTime = b.lastMessage?.timestamp ?? 0;
+            return bTime - aTime;
+          });
         });
         break;
       }
