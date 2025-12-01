@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Passage - iMessage from anywhere</title>
-  <meta name="description" content="Access your iMessage and SMS conversations from any browser on your local network. A beautiful, native macOS app.">
+  <title>Passage - Message from anywhere</title>
+  <meta name="description" content="Access your texting conversations from any browser on your local network. A beautiful, native macOS app.">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
   <style>
     :root {
@@ -479,6 +479,27 @@
       font-size: 0.9rem;
       margin-top: 8px;
       overflow-x: auto;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .code-block:hover {
+      border-color: var(--text-muted);
+    }
+
+    .code-block.copied {
+      border-color: var(--imessage-green);
+    }
+
+    .code-block.copied::after {
+      content: 'Copied!';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--imessage-green);
+      font-size: 0.8rem;
     }
 
     /* Requirements callout */
@@ -487,7 +508,7 @@
       border: 1px solid rgba(59, 130, 246, 0.3);
       border-radius: 12px;
       padding: 20px 24px;
-      margin-top: 32px;
+      margin-bottom: 32px;
       text-align: left;
     }
 
@@ -592,9 +613,9 @@
         <span class="badge-dot"></span>
         Open source & local-first
       </div>
-      <h1>iMessage from <span>anywhere</span></h1>
+      <h1>Message from <span>anywhere</span></h1>
       <p class="hero-description">
-        Access your iMessage and SMS conversations from any browser on your network.
+        Access your texting conversations from any browser on your network.
         TV, Linux desktop, tablet—if it has a browser, you can message.
       </p>
       <div class="cta-group">
@@ -689,8 +710,8 @@
         </div>
         <div class="feature-card">
           <div class="feature-icon">📱</div>
-          <h3>iMessage & SMS</h3>
-          <p>Full support for both iMessage (blue bubbles) and SMS (green bubbles). Send photos too.</p>
+          <h3>Blue & Green Bubbles</h3>
+          <p>Full support for both blue bubbles and SMS (green bubbles). Send photos too.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">⌨️</div>
@@ -710,44 +731,6 @@
         <h2>Get Started in 2 Minutes</h2>
         <p>A few commands and you're up and running</p>
 
-        <div class="install-steps">
-          <div class="install-step">
-            <div class="step-number">1</div>
-            <div class="step-content">
-              <h4>Clone the repository</h4>
-              <p>Get the source code from GitHub</p>
-              <div class="code-block">git clone https://github.com/ChrisEdgington/passage.git && cd passage</div>
-            </div>
-          </div>
-
-          <div class="install-step">
-            <div class="step-number">2</div>
-            <div class="step-content">
-              <h4>Install dependencies</h4>
-              <p>Uses pnpm for fast, efficient package management</p>
-              <div class="code-block">pnpm install</div>
-            </div>
-          </div>
-
-          <div class="install-step">
-            <div class="step-number">3</div>
-            <div class="step-content">
-              <h4>Build and run</h4>
-              <p>Build the unified app and start the server</p>
-              <div class="code-block">pnpm build:unified && pnpm start</div>
-            </div>
-          </div>
-
-          <div class="install-step">
-            <div class="step-number">4</div>
-            <div class="step-content">
-              <h4>Open in your browser</h4>
-              <p>Access from any device on your network</p>
-              <div class="code-block">http://YOUR_MAC_IP:3000</div>
-            </div>
-          </div>
-        </div>
-
         <div class="requirements">
           <h4>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -759,8 +742,46 @@
           <ul>
             <li>macOS with Messages.app signed into iCloud</li>
             <li>Terminal app needs Full Disk Access permission</li>
-            <li>Node.js 18+ and pnpm installed</li>
+            <li>Node.js 22+ and pnpm installed</li>
           </ul>
+        </div>
+
+        <div class="install-steps">
+          <div class="install-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Clone the repository</h4>
+              <p>Get the source code from GitHub</p>
+              <div class="code-block" onclick="copyToClipboard(this)">git clone https://github.com/ChrisEdgington/passage.git && cd passage</div>
+            </div>
+          </div>
+
+          <div class="install-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Install dependencies</h4>
+              <p>Uses pnpm for fast, efficient package management</p>
+              <div class="code-block" onclick="copyToClipboard(this)">pnpm install</div>
+            </div>
+          </div>
+
+          <div class="install-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Build and run</h4>
+              <p>Build the unified app and start the server</p>
+              <div class="code-block" onclick="copyToClipboard(this)">pnpm build:unified && pnpm start</div>
+            </div>
+          </div>
+
+          <div class="install-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>Open in your browser</h4>
+              <p>Access from any device on your network</p>
+              <div class="code-block" onclick="copyToClipboard(this)">http://YOUR_MAC_IP:3000</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -773,7 +794,22 @@
         <a href="https://github.com/ChrisEdgington/passage">Source on GitHub</a> ·
         MIT License
       </p>
+      <p style="margin-top: 12px;">
+        Got questions? Contact me at <a href="https://x.com/EdgingtonC">@EdgingtonC</a>
+      </p>
     </div>
   </footer>
+
+  <script>
+    function copyToClipboard(element) {
+      const text = element.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        element.classList.add('copied');
+        setTimeout(() => {
+          element.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
 </body>
 </html>
