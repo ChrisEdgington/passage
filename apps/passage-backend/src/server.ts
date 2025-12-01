@@ -6,7 +6,7 @@ import multer from 'multer';
 import { join, dirname } from 'node:path';
 import { existsSync, mkdirSync } from 'node:fs';
 import { readFile, unlink } from 'node:fs/promises';
-import { homedir, tmpdir } from 'node:os';
+import { homedir, tmpdir, networkInterfaces } from 'node:os';
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
@@ -58,6 +58,20 @@ import { ContactsResolver } from './contacts.js';
 
 const PORT = Number.parseInt(process.env.PORT || '3000', 10);
 const ATTACHMENTS_PATH = process.env.ATTACHMENTS_PATH || join(homedir(), 'Library/Messages/Attachments');
+
+// Get the machine's local IP address
+function getLocalIP(): string {
+  const interfaces = networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name] || []) {
+      // Skip internal (loopback) and non-IPv4 addresses
+      if (!iface.internal && iface.family === 'IPv4') {
+        return iface.address;
+      }
+    }
+  }
+  return 'localhost';
+}
 
 // Simple logger with timestamps
 const log = {
@@ -144,7 +158,7 @@ apiV1.get('/conversations/:id/messages', (req, res) => {
   }
 });
 
-// POST /api/v1/upload - Upload an image for sending (already converted to JPEG by client)
+// POST /api/v1/upload - Upload an image for sending (resized client-side)
 apiV1.post('/upload', upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
@@ -152,6 +166,7 @@ apiV1.post('/upload', upload.single('image'), (req, res) => {
       return res.status(400).json(errorResponse);
     }
 
+    log.info(`Upload received: ${req.file.originalname}, size: ${(req.file.size / 1024).toFixed(1)}KB`);
     res.json({ filePath: req.file.path });
   } catch (error: any) {
     console.error('Error uploading file:', error);
@@ -492,13 +507,25 @@ watcher.start();
 
 // Start the server
 server.listen(PORT, '0.0.0.0', () => {
+  const ip = getLocalIP();
+  const url = `http://${ip}:${PORT}`;
+
+  // Calculate box width based on longest line
+  const title = 'Passage Server Running';
+  const urlLine = url;
+  const maxLen = Math.max(title.length, urlLine.length);
+  const boxWidth = maxLen + 4; // 2 spaces padding on each side
+
+  const hBar = '═'.repeat(boxWidth);
+  const padTitle = title.padStart(Math.floor((boxWidth + title.length) / 2)).padEnd(boxWidth);
+  const padUrl = urlLine.padStart(Math.floor((boxWidth + urlLine.length) / 2)).padEnd(boxWidth);
+
   console.log(`
-╔═══════════════════════════════════════╗
-║        Passage Server Running         ║
-╠═══════════════════════════════════════╣
-║  HTTP: http://localhost:${PORT}        ║
-║  WebSocket: ws://localhost:${PORT}/ws ║
-╚═══════════════════════════════════════╝
+╔${hBar}╗
+║${padTitle}║
+╠${hBar}╣
+║${padUrl}║
+╚${hBar}╝
   `);
 });
 

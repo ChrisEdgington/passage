@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Send, X, Image as ImageIcon } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
 // Command system: /r<char> for quick emoji reactions
 // Note: Native iMessage tapbacks require Private API injection (like BlueBubbles)
 // which is not supported. These commands send the emoji as a regular message.
@@ -258,10 +256,23 @@ export const MessageComposer = observer(() => {
         e.preventDefault();
         const file = item.getAsFile();
         if (file) {
-          // Convert to JPEG at 80% quality for smaller file size
-          const jpegFile = await convertToJpeg(file, 0.8);
-          const preview = URL.createObjectURL(jpegFile);
-          setPastedImage({ file: jpegFile, preview });
+          try {
+            // Convert to JPEG at 80% quality for smaller file size
+            const jpegFile = await convertToJpeg(file, 0.8);
+
+            // Sanity check: if the file is still huge, something went wrong
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            if (jpegFile.size > maxSize) {
+              showFeedback(`Image too large (${(jpegFile.size / 1024 / 1024).toFixed(1)}MB) - resize failed`);
+              return;
+            }
+
+            const preview = URL.createObjectURL(jpegFile);
+            setPastedImage({ file: jpegFile, preview });
+          } catch (error) {
+            console.error('Failed to process image:', error);
+            showFeedback('Failed to process image - try a different format');
+          }
         }
         break;
       }
@@ -327,7 +338,7 @@ export const MessageComposer = observer(() => {
         const formData = new FormData();
         formData.append('image', pastedImage.file);
 
-        const uploadRes = await fetch(`${API_BASE_URL}/api/v1/upload`, {
+        const uploadRes = await fetch(`${controller.apiBaseUrl}/api/v1/upload`, {
           method: 'POST',
           body: formData,
         });

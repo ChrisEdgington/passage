@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules",
     "dev": "pnpm --parallel -r dev",
     "build": "pnpm --parallel -r build",
     "build:unified": "pnpm -r build && rm -rf apps/passage-backend/dist/frontend && cp -r apps/passage-frontend/dist apps/passage-backend/dist/frontend",
@@ -13,5 +14,12 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild",
+      "sharp"
+    ]
   }
 }

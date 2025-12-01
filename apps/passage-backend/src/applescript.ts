@@ -90,7 +90,7 @@ end tell
 
     try {
       await writeFile(tmpFile, script, 'utf8');
-      await execAsync(`osascript "${tmpFile}"`);
+      await execAsync(`osascript "${tmpFile}"`, { timeout: 30000 }); // 30 second timeout
       await unlink(tmpFile).catch(() => {});
       return { success: true };
     } catch (error: any) {
@@ -110,7 +110,7 @@ end tell
 `;
         const smsTmpFile = join(tmpdir(), `send-attachment-sms-${Date.now()}.scpt`);
         await writeFile(smsTmpFile, smsScript, 'utf8');
-        await execAsync(`osascript "${smsTmpFile}"`);
+        await execAsync(`osascript "${smsTmpFile}"`, { timeout: 30000 }); // 30 second timeout
         await unlink(smsTmpFile).catch(() => {});
         return { success: true };
       } catch (smsError: any) {
